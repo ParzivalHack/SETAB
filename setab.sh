@@ -4,7 +4,7 @@
 read -p "Enter a URL: " url
 
 # Use the `subfinder` command to find subdomains
-subdomains=$(subfinder -d $url -silent | grep "admin")
+subdomains=$(subfinder -d $url -s | grep "admin")
 
 # Print the subdomains
 echo "Subdomains containing 'admin':"
