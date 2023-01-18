@@ -3,8 +3,8 @@ toilet SETAB
 # Prompt the user for a URL
 read -p "Enter a URL (example.com): " url
 
-# Use the `amass` command to find subdomains
-subdomains=$(amass intel -whois -d $url | grep "admin")
+# Use the `assetfinder` command to find subdomains
+subdomains=$(assetfinder --subs-only $url | grep "admin")
 
 # Print the subdomains
 echo "Subdomains containing 'admin':"
