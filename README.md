@@ -1,2 +1,2 @@
 # SETAB
-Subdomain Enumeration Tool And Bruteforcing tool
+Subdomain Enumeration Tool And Bruteforcing
